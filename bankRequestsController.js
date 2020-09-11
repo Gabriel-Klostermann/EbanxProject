@@ -1,16 +1,19 @@
 var accounts = {};
 
-depositAmount = function (accountId, balance) {
-    accounts[accountId] += balance
-    console.log('DEPOSITED ' + balance)
+depositAmount = function (accountId, amount) {
+    accounts[accountId] += amount
+    console.log('DEPOSITED ' + amount)
+}
+withdrawAmount = function (accountId, amount) {
+    accounts[accountId] -= amount
+    console.log('WITHDREW ' + amount)
 }
 createNewAccount = function (accountId, balance) {        
     accounts[accountId] = balance
     console.log('CREATED NEW ACCOUNT WITH ID ' + accountId)
 }
 doesAccountExist = function (accountId) {   
-    for (var key in accounts) {
-        console.log('KEY' + key)
+    for (var key in accounts) {        
         if (key === accountId) {
             return true
         }
@@ -43,6 +46,15 @@ module.exports = {
             response.status = 201
             response.json = {"destination": {"id":eventData.destination, "balance": eventData.amount}}
             return response
-        } 
+        } else if (eventData.type === 'withdraw' && doesAccountExist(eventData.origin)) {
+            withdrawAmount(eventData.origin, eventData.amount)
+            response.status = 201
+            response.json = {"origin": {"id":eventData.origin, "balance": accounts[eventData.origin].toString()}}
+            return response
+        } else if (eventData.type === 'withdraw' && !doesAccountExist(eventData.origin)) {
+            response.status = 404
+            response.json = '0'
+            return response
+        }
     }
 }
