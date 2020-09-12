@@ -15,6 +15,11 @@ app.post('/event', function (req, res) {
     res.status(responseData.status).send(responseData.json)
 })
 
+app.post('/reset', function (req, res) {
+    bankRequestsCtrl.resetAccounts()
+    res.sendStatus(200)
+})
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
